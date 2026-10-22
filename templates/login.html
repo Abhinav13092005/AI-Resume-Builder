@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | AI Resume Builder</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #07101f;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            width: 100%;
+            max-width: 420px;
+            padding: 32px;
+            border-radius: 16px;
+            background: #0f1b2d;
+            border: 1px solid #26364d;
+        }
+        h1 { text-align: center; margin-top: 0; }
+        p { text-align: center; color: #b8c4d6; }
+        label { display: block; margin: 18px 0 7px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #394b63;
+            background: #07101f;
+            color: white;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            margin-top: 24px;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            background: #38bdf8;
+            color: #07101f;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .message {
+            background: #35232b;
+            padding: 10px;
+            border-radius: 8px;
+            color: #ffd5dc;
+            margin: 10px 0;
+        }
+        a { color: #38bdf8; }
+        .footer { margin-top: 22px; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Welcome Back</h1>
+        <p>Login to your AI Resume Builder account.</p>
+
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <div class="message">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('login') }}">
+            <label for="email">Email Address</label>
+            <input id="email" type="email" name="email"
+                   placeholder="Enter your email" required>
+
+            <label for="password">Password</label>
+            <input id="password" type="password" name="password"
+                   placeholder="Enter your password" required>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <p class="footer">
+            Don't have an account?
+            <a href="{{ url_for('signup') }}">Create Account</a>
+        </p>
+    </div>
+</body>
+</html>

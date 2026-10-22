@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Builder</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 22px 8%;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        .nav-links .signup-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 100px 20px 70px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 10px 16px;
+            border-radius: 30px;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        h1 {
+            font-size: clamp(36px, 6vw, 60px);
+            line-height: 1.15;
+            margin-bottom: 22px;
+        }
+
+        h1 span {
+            color: #2563eb;
+        }
+
+        .description {
+            max-width: 650px;
+            margin: 0 auto 30px;
+            color: #64748b;
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        .start-btn {
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 15px 26px;
+            border-radius: 9px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .start-btn:hover,
+        .nav-links .signup-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            max-width: 1050px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 28px;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            padding: 35px 15px;
+            margin-top: 50px;
+            color: #64748b;
+        }
+
+        @media (max-width: 700px) {
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding-top: 65px;
+            }
+
+            nav {
+                padding: 18px 5%;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">AI Resume Builder</div>
+
+        <div class="nav-links">
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('signup') }}" class="signup-btn">
+                Sign Up
+            </a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="tag">AI-Powered Career Assistant</div>
+
+        <h1>
+            Build Your Perfect<br>
+            <span>Professional Resume</span>
+        </h1>
+
+        <p class="description">
+            Create professional, ATS-friendly resumes with AI assistance.
+            Improve your content and download your resume as a PDF.
+            Save your resumes and access them anytime.
+        </p>
+
+        <a href="{{ url_for('signup') }}" class="start-btn">
+            Get Started — Create Resume
+        </a>
+    </section>
+
+    <section class="features">
+
+        <div class="feature-card">
+            <h3>AI Resume Assistant</h3>
+            <p>
+                Improve your professional summary and project descriptions
+                with AI-powered suggestions.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <h3>Professional Resume</h3>
+            <p>
+                Create a clean and professional resume suitable
+                for students and freshers.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <h3>PDF Download</h3>
+            <p>
+                Generate your resume and download a printable PDF
+                for job applications.
+            </p>
+        </div>
+
+    </section>
+
+    <footer>
+        AI Resume Builder | Build Your Career With Confidence
+    </footer>
+
+</body>
+</html>

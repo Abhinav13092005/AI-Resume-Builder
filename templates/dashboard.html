@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | AI Resume Builder</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 24px;
+            font-family: Arial, sans-serif;
+            background: #07101f;
+            color: #fff;
+        }
+        .container { max-width: 1000px; margin: auto; }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        h1 { margin-bottom: 8px; }
+        p { color: #b8c4d6; }
+        a { text-decoration: none; }
+        .button {
+            display: inline-block;
+            padding: 11px 16px;
+            border-radius: 8px;
+            background: #38bdf8;
+            color: #07101f;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .logout { background: #24354b; color: white; }
+        .resume-card {
+            background: #0f1b2d;
+            border: 1px solid #26364d;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 14px 0;
+        }
+        .resume-card h3 { margin-top: 0; }
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .delete { background: #dc4545; color: white; }
+        .empty {
+            background: #0f1b2d;
+            border: 1px dashed #394b63;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+        }
+        .message {
+            background: #173b36;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 600px) {
+            body { padding: 16px; }
+            header { align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>My Dashboard</h1>
+                <p>Welcome, {{ user_name }}!</p>
+            </div>
+            <div class="actions">
+                <a class="button" href="{{ url_for('resume') }}">+ Create Resume</a>
+                <a class="button logout" href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <div class="message">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <h2>My Saved Resumes</h2>
+
+        {% if resumes %}
+            {% for item in resumes %}
+                <div class="resume-card">
+                    <h3>{{ item.title }}</h3>
+                    <p>Email: {{ item.email }}</p>
+                    <p>Phone: {{ item.phone or "Not provided" }}</p>
+
+                    <div class="actions">
+                        <a class="button"
+                           href="{{ url_for('edit_resume', resume_id=item.id) }}">
+                            Open / Edit
+                        </a>
+
+                        <form method="POST"
+                              action="{{ url_for('delete_resume', resume_id=item.id) }}"
+                              onsubmit="return confirm('Kya aap is resume ko delete karna chahte hain?');">
+                            <button class="button delete" type="submit">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">
+                <h3>Abhi koi saved resume nahi hai.</h3>
+                <p>Create Resume par click karke apna pehla resume banao.</p>
+                <a class="button" href="{{ url_for('resume') }}">Create My Resume</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

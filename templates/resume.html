@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Builder</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 25px 12px;
+            background: #f1f5f9;
+            font-family: Arial, sans-serif;
+            color: #1e293b;
+        }
+
+        .container { max-width: 1100px; margin: auto; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        h1 { margin: 0; color: #0f172a; }
+        h2 { margin-top: 0; color: #0f172a; }
+
+        .back-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 22px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin: 16px 0 7px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 15px;
+            font-family: Arial, sans-serif;
+            background: white;
+        }
+
+        textarea { min-height: 100px; resize: vertical; }
+
+        input:focus, textarea:focus, select:focus {
+            outline: 2px solid #bfdbfe;
+            border-color: #2563eb;
+        }
+
+        button {
+            border: none;
+            padding: 12px 18px;
+            margin-top: 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            background: #2563eb;
+            color: white;
+        }
+
+        button:hover { opacity: 0.9; }
+        .full-button { width: 100%; }
+        .ai-btn { background: #0f766e; width: 100%; }
+        .pdf-btn { background: #7c3aed; width: 100%; }
+        .ats-btn { background: #0f172a; width: 100%; }
+
+        .message {
+            padding: 13px;
+            border-radius: 7px;
+            background: #dcfce7;
+            color: #166534;
+            margin-bottom: 20px;
+            overflow-wrap: anywhere;
+        }
+
+        .help-text {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .resume-preview {
+            background: white;
+            padding: 30px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .resume-preview h3 {
+            margin-top: 22px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        .resume-preview .person-name {
+            font-size: 28px;
+            margin: 0 0 10px;
+            overflow-wrap: anywhere;
+        }
+
+        .resume-preview p { line-height: 1.6; white-space: pre-wrap; }
+
+        .resume-preview .contact { color: #475569; line-height: 1.7; }
+
+        .resume-preview a { color: #2563eb; overflow-wrap: anywhere; }
+
+        .template-modern { border-top: 7px solid #2563eb; }
+
+        .template-classic {
+            border-top: 7px solid #334155;
+            font-family: Georgia, serif;
+        }
+
+        .template-classic .person-name,
+        .template-classic .contact { text-align: center; }
+
+        .template-minimal {
+            border-top: 3px solid #94a3b8;
+            box-shadow: none;
+        }
+
+        .template-minimal h3 { border-bottom: none; }
+
+        .ats-score {
+            font-size: 38px;
+            font-weight: bold;
+            margin: 12px 0;
+            color: #0f766e;
+        }
+
+        .ats-result {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            overflow-wrap: anywhere;
+        }
+
+        .keyword-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0 18px;
+        }
+
+        .keyword {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .missing-keyword {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .ats-bar {
+            width: 100%;
+            height: 12px;
+            border-radius: 10px;
+            background: #e2e8f0;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .ats-bar-fill {
+            height: 100%;
+            width: 0;
+            background: #0f766e;
+            transition: width 0.4s ease;
+        }
+
+        .empty-preview {
+            color: #64748b;
+            text-align: center;
+            padding: 25px 5px;
+        }
+
+        @media (max-width: 650px) {
+            body { padding: 15px 10px; }
+            .card { padding: 18px; }
+            .two-columns { grid-template-columns: 1fr; gap: 0; }
+            .resume-preview { padding: 18px; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <div class="header">
+        <h1>AI Resume Builder</h1>
+        <a class="back-link" href="{{ url_for('dashboard') }}">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    {% if ai_message %}
+        <div class="message">{{ ai_message }}</div>
+    {% endif %}
+
+    <!-- RESUME FORM -->
+    <section class="card">
+        <h2>Create Your Resume</h2>
+
+        <p class="help-text">
+            Fill in your details, save your resume, and use AI to improve
+            your summary or generate a project description.
+        </p>
+
+        <form id="resumeForm" method="POST" action="{{ url_for('resume') }}">
+
+            {% if saved_resume_id %}
+                <input type="hidden" name="resume_id" value="{{ saved_resume_id }}">
+            {% endif %}
+
+            <label for="name">Full Name *</label>
+            <input type="text" id="name" name="name"
+                   value="{{ resume_data.get('name', '') if resume_data else '' }}"
+                   placeholder="Enter your full name" required>
+
+            <div class="two-columns">
+                <div>
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email"
+                           value="{{ resume_data.get('email', '') if resume_data else '' }}"
+                           placeholder="you@example.com" required>
+                </div>
+
+                <div>
+                    <label for="phone">Phone Number</label>
+                    <input type="text" id="phone" name="phone"
+                           value="{{ resume_data.get('phone', '') if resume_data else '' }}"
+                           placeholder="Your phone number">
+                </div>
+            </div>
+
+            <label for="linkedin">LinkedIn Profile</label>
+            <input type="text" id="linkedin" name="linkedin"
+                   value="{{ resume_data.get('linkedin', '') if resume_data else '' }}"
+                   placeholder="https://linkedin.com/in/your-profile">
+
+            <label for="summary">Professional Summary</label>
+            <textarea id="summary" name="summary"
+                      placeholder="Write a short professional summary...">{{ resume_data.get('summary', '') if resume_data else '' }}</textarea>
+
+            <label for="education">Education</label>
+            <textarea id="education" name="education"
+                      placeholder="Degree, college, graduation year, CGPA...">{{ resume_data.get('education', '') if resume_data else '' }}</textarea>
+
+            <label for="skills">Technical Skills</label>
+            <textarea id="skills" name="skills"
+                      placeholder="Python, Java, SQL, HTML, CSS...">{{ resume_data.get('skills', '') if resume_data else '' }}</textarea>
+
+            <label for="projects">Projects</label>
+            <textarea id="projects" name="projects"
+                      placeholder="Project name, technologies, features and responsibilities...">{{ resume_data.get('projects', '') if resume_data else '' }}</textarea>
+
+            <label for="template">Choose Resume Template</label>
+            <select id="template" name="template">
+                <option value="modern" {% if selected_template == 'modern' %}selected{% endif %}>Modern</option>
+                <option value="classic" {% if selected_template == 'classic' %}selected{% endif %}>Classic</option>
+                <option value="minimal" {% if selected_template == 'minimal' %}selected{% endif %}>Minimal</option>
+            </select>
+
+            <button type="submit" class="full-button">Save Resume</button>
+        </form>
+    </section>
+
+    {% if submitted and resume_data %}
+
+    <!-- AI SUMMARY GENERATOR -->
+    <section class="card">
+        <h2>AI Summary Generator</h2>
+        <p class="help-text">
+            Generate a professional summary using your education, skills, and project details.
+        </p>
+
+        <form method="POST" action="{{ url_for('improve_summary') }}">
+            {% if saved_resume_id %}
+                <input type="hidden" name="resume_id" value="{{ saved_resume_id }}">
+            {% endif %}
+
+            <input type="hidden" name="template" value="{{ selected_template or 'modern' }}">
+
+            {% for field in ['name', 'email', 'phone', 'linkedin', 'summary', 'education', 'skills', 'projects'] %}
+                <input type="hidden" name="{{ field }}" value="{{ resume_data.get(field, '') }}">
+            {% endfor %}
+
+            <button type="submit" class="ai-btn">Improve Professional Summary with AI</button>
+        </form>
+    </section>
+
+    <!-- AI PROJECT DESCRIPTION GENERATOR -->
+    <section class="card">
+        <h2>AI Project Description Generator</h2>
+        <p class="help-text">
+            Enter your project details. AI will generate a professional description that you can use in your resume.
+        </p>
+
+        <form method="POST" action="{{ url_for('generate_project_description') }}">
+            {% if saved_resume_id %}
+                <input type="hidden" name="resume_id" value="{{ saved_resume_id }}">
+            {% endif %}
+
+            <input type="hidden" name="template" value="{{ selected_template or 'modern' }}">
+
+            {% for field in ['name', 'email', 'phone', 'linkedin', 'summary', 'education', 'skills', 'projects'] %}
+                <input type="hidden" name="{{ field }}" value="{{ resume_data.get(field, '') }}">
+            {% endfor %}
+
+            <label for="project_name">Project Name *</label>
+            <input type="text" id="project_name" name="project_name"
+                   value="{{ project_name or '' }}"
+                   placeholder="Example: AI Resume Builder" required>
+
+            <label for="project_technologies">Technologies Used *</label>
+            <input type="text" id="project_technologies" name="project_technologies"
+                   value="{{ project_technologies or '' }}"
+                   placeholder="Python, Flask, SQLite, Gemini API" required>
+
+            <label for="project_features">Project Features and Details *</label>
+            <textarea id="project_features" name="project_features"
+                      placeholder="Explain what your project does and its main features..."
+                      required>{{ project_features or '' }}</textarea>
+
+            <button type="submit" class="ai-btn">Generate Project Description with AI</button>
+        </form>
+    </section>
+
+    <!-- ATS SCORE CHECKER -->
+    <section class="card">
+        <h2>ATS Resume Score Checker</h2>
+
+        <p class="help-text">
+            Paste the job description for the position you want to apply for.
+            The checker compares its keywords with your resume and shows an estimated match.
+        </p>
+
+        <label for="jobDescription">Job Description *</label>
+        <textarea id="jobDescription"
+                  placeholder="Paste the complete job description here. Example: Python, Flask, SQL, REST API, Git, problem-solving..."
+                  required></textarea>
+
+        <button type="button" class="ats-btn" onclick="checkATSScore()">
+            Check ATS Score
+        </button>
+
+        <div id="atsResults" class="ats-result" hidden aria-live="polite">
+            <h3>Estimated ATS Keyword Match</h3>
+            <div id="atsScore" class="ats-score">0%</div>
+
+            <div class="ats-bar">
+                <div id="atsBarFill" class="ats-bar-fill"></div>
+            </div>
+
+            <p id="atsMessage" class="help-text"></p>
+
+            <h3>Matched Keywords</h3>
+            <div id="matchedKeywords" class="keyword-list"></div>
+
+            <h3>Missing Keywords</h3>
+            <div id="missingKeywords" class="keyword-list"></div>
+
+            <h3>Suggestions</h3>
+            <ul id="atsSuggestions"></ul>
+
+            <p class="help-text">
+                Note: This is a basic keyword-match estimate, not an official score
+                from a company's ATS software. Add a missing skill only if you genuinely have it.
+            </p>
+        </div>
+    </section>
+
+    <!-- RESUME PREVIEW -->
+    <section class="card">
+        <h2>Resume Preview</h2>
+
+        <div id="resumePreview"
+             class="resume-preview template-{{ selected_template or 'modern' }}">
+
+            <h2 class="person-name">{{ resume_data.get('name', '') }}</h2>
+
+            <div class="contact">
+                {% if resume_data.get('email') %}
+                    <div>{{ resume_data.get('email') }}</div>
+                {% endif %}
+
+                {% if resume_data.get('phone') %}
+                    <div>{{ resume_data.get('phone') }}</div>
+                {% endif %}
+
+                {% if resume_data.get('linkedin') %}
+                    <div>
+                        <a href="{{ resume_data.get('linkedin') }}"
+                           target="_blank" rel="noopener noreferrer">{{ resume_data.get('linkedin') }}</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% if resume_data.get('summary') %}
+                <h3>Professional Summary</h3>
+                <p>{{ resume_data.get('summary') }}</p>
+            {% endif %}
+
+            {% if resume_data.get('education') %}
+                <h3>Education</h3>
+                <p>{{ resume_data.get('education') }}</p>
+            {% endif %}
+
+            {% if resume_data.get('skills') %}
+                <h3>Technical Skills</h3>
+                <p>{{ resume_data.get('skills') }}</p>
+            {% endif %}
+
+            {% if resume_data.get('projects') %}
+                <h3>Projects</h3>
+                <p>{{ resume_data.get('projects') }}</p>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- PDF DOWNLOAD -->
+    <section class="card">
+        <h2>Download Resume</h2>
+        <p class="help-text">Download your resume as a PDF document.</p>
+
+        <form method="POST" action="{{ url_for('download_pdf') }}">
+            {% if saved_resume_id %}
+                <input type="hidden" name="resume_id" value="{{ saved_resume_id }}">
+            {% endif %}
+
+            <input type="hidden" name="template" value="{{ selected_template or 'modern' }}">
+
+            {% for field in ['name', 'email', 'phone', 'linkedin', 'summary', 'education', 'skills', 'projects'] %}
+                <input type="hidden" name="{{ field }}" value="{{ resume_data.get(field, '') }}">
+            {% endfor %}
+
+            <button type="submit" class="pdf-btn">Download Resume PDF</button>
+        </form>
+    </section>
+
+    {% endif %}
+
+</div>
+
+<script>
+    // Keep template fields in sync.
+    const templateSelect = document.getElementById("template");
+
+    function updateTemplateFields() {
+        if (!templateSelect) return;
+
+        document.querySelectorAll('input[name="template"]').forEach(function(field) {
+            field.value = templateSelect.value;
+        });
+
+        const preview = document.getElementById("resumePreview");
+
+        if (preview) {
+            preview.classList.remove(
+                "template-modern",
+                "template-classic",
+                "template-minimal"
+            );
+
+            preview.classList.add("template-" + templateSelect.value);
+        }
+    }
+
+    if (templateSelect) {
+        templateSelect.addEventListener("change", updateTemplateFields);
+    }
+
+    updateTemplateFields();
+
+    // ATS keyword matching.
+    function checkATSScore() {
+        const jobDescription = document.getElementById("jobDescription").value.trim();
+        const form = document.getElementById("resumeForm");
+
+        if (!jobDescription) {
+            alert("Please paste the job description first.");
+            return;
+        }
+
+        const fields = ["name", "summary", "education", "skills", "projects"];
+        let resumeText = "";
+
+        fields.forEach(function(fieldName) {
+            const field = form.elements.namedItem(fieldName);
+
+            if (field && typeof field.value === "string") {
+                resumeText += " " + field.value;
+            }
+        });
+
+        if (!resumeText.trim()) {
+            alert("Please fill in your resume details first.");
+            return;
+        }
+
+        const stopWords = new Set([
+            "the", "and", "for", "with", "from", "that", "this", "are",
+            "you", "your", "our", "will", "have", "has", "had", "was",
+            "were", "been", "being", "into", "about", "their", "they",
+            "them", "his", "her", "she", "him", "its", "who", "what",
+            "when", "where", "why", "how", "can", "could", "should",
+            "would", "must", "may", "might", "not", "all", "any", "each",
+            "such", "than", "then", "also", "more", "most", "other",
+            "some", "new", "job", "role", "work", "working", "team",
+            "years", "year", "experience", "required", "preferred",
+            "ability", "strong", "good", "excellent", "including",
+            "using", "use", "used", "responsibilities", "requirements",
+            "qualification", "qualifications", "candidate", "candidates",
+            "knowledge", "skills", "skill", "developer", "development",
+            "position", "company", "join", "looking", "provide",
+            "support", "responsible", "related", "etc", "within",
+            "across", "through", "based", "ensure", "including"
+        ]);
+
+        function extractKeywords(text) {
+            const normalized = text.toLowerCase();
+
+            const phrases = [
+                "spring boot", "spring framework", "rest api", "restful api",
+                "machine learning", "deep learning", "artificial intelligence",
+                "generative ai", "data structures", "problem solving",
+                "web development", "software development", "object oriented programming",
+                "google gemini api", "sql server", "amazon web services",
+                "microsoft azure", "version control", "data analysis",
+                "natural language processing", "continuous integration"
+            ];
+
+            const foundPhrases = phrases.filter(function(phrase) {
+                return normalized.includes(phrase);
+            });
+
+            const words = normalized.match(/[a-z][a-z0-9+#.-]*/g) || [];
+
+            const usefulWords = words.filter(function(word) {
+                return word.length > 1 &&
+                    !stopWords.has(word) &&
+                    !/^\d+$/.test(word);
+            });
+
+            return [...new Set([...foundPhrases, ...usefulWords])];
+        }
+
+        const jobKeywords = extractKeywords(jobDescription);
+        const resumeKeywords = new Set(extractKeywords(resumeText));
+
+        if (jobKeywords.length === 0) {
+            alert("The job description does not contain enough identifiable keywords. Please paste a more detailed description.");
+            return;
+        }
+
+        const matched = jobKeywords.filter(function(keyword) {
+            return resumeKeywords.has(keyword);
+        });
+
+        const missing = jobKeywords.filter(function(keyword) {
+            return !resumeKeywords.has(keyword);
+        });
+
+        const score = Math.round((matched.length / jobKeywords.length) * 100);
+
+        document.getElementById("atsResults").hidden = false;
+        document.getElementById("atsScore").textContent = score + "%";
+        document.getElementById("atsBarFill").style.width = score + "%";
+
+        let message = "";
+
+        if (score >= 80) {
+            message = "Good keyword match. Review your resume for accuracy and relevance.";
+        } else if (score >= 50) {
+            message = "Moderate keyword match. Review the missing keywords below.";
+        } else {
+            message = "Low keyword match. Compare your actual skills and projects with the job requirements.";
+        }
+
+        document.getElementById("atsMessage").textContent = message;
+
+        function displayKeywords(containerId, keywords, isMissing) {
+            const container = document.getElementById(containerId);
+            container.replaceChildren();
+
+            if (keywords.length === 0) {
+                const emptyMessage = document.createElement("span");
+                emptyMessage.textContent = isMissing
+                    ? "No missing keywords detected."
+                    : "No matching keywords found.";
+                container.appendChild(emptyMessage);
+                return;
+            }
+
+            keywords.forEach(function(keyword) {
+                const tag = document.createElement("span");
+                tag.className = isMissing
+                    ? "keyword missing-keyword"
+                    : "keyword";
+                tag.textContent = keyword;
+                container.appendChild(tag);
+            });
+        }
+
+        displayKeywords("matchedKeywords", matched, false);
+        displayKeywords("missingKeywords", missing, true);
+
+        const suggestions = document.getElementById("atsSuggestions");
+        suggestions.replaceChildren();
+
+        const tips = [];
+
+        if (missing.length > 0) {
+            tips.push("Review the missing keywords and include only those that honestly match your skills or experience.");
+        }
+
+        if (!form.elements.namedItem("summary").value.trim()) {
+            tips.push("Add a short professional summary tailored to the role.");
+        }
+
+        if (!form.elements.namedItem("skills").value.trim()) {
+            tips.push("Add a Technical Skills section listing your relevant skills.");
+        }
+
+        if (!form.elements.namedItem("projects").value.trim()) {
+            tips.push("Add relevant projects and describe the technologies you used.");
+        }
+
+        if (!form.elements.namedItem("education").value.trim()) {
+            tips.push("Add your degree, college, graduation year, and CGPA or percentage.");
+        }
+
+        if (tips.length === 0) {
+            tips.push("Keep your resume clear, truthful, easy to read, and tailored to the job description.");
+        }
+
+        tips.forEach(function(tip) {
+            const item = document.createElement("li");
+            item.textContent = tip;
+            suggestions.appendChild(item);
+        });
+    }
+</script>
+
+</body>
+</html>
