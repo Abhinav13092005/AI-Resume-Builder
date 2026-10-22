@@ -1,6 +1,8 @@
 # 🚀 AI Resume Builder
 
 An AI-powered Resume Builder web application developed using Python, Flask, SQLite, and Google Gemini API. It helps users create professional resumes, improve resume content using Generative AI, analyze ATS keyword matching, and download resumes in PDF format.
+Live Demo: https://ai-resume-builder-bsbq.onrender.com
+GitHub Repository: https://github.com/Abhinav13092005/AI-Resume-Builder
 
 ### ✨ Features
 - 🔐 User Signup, Login & Logout
