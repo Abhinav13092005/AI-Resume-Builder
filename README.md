@@ -1,6 +1,6 @@
 # AI Resume Builder 🚀
 
-Live Demo: https://ai-resume-builder-bsbq.onrender.com
+Live Demo: https://ai-resume-builder-2-pyuv.onrender.com
 
 GitHub Repository: https://github.com/Abhinav13092005/AI-Resume-Builder
 
