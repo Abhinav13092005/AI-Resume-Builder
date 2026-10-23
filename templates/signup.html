@@ -5,8 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Account | AI Resume Builder</title>
+
     <style>
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -18,6 +22,7 @@
             align-items: center;
             padding: 20px;
         }
+
         .card {
             width: 100%;
             max-width: 420px;
@@ -26,9 +31,22 @@
             border-radius: 16px;
             border: 1px solid #26364d;
         }
-        h1 { margin-top: 0; text-align: center; }
-        p { color: #b8c4d6; text-align: center; }
-        label { display: block; margin: 18px 0 7px; }
+
+        h1 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        p {
+            color: #b8c4d6;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin: 18px 0 7px;
+        }
+
         input {
             width: 100%;
             padding: 12px;
@@ -38,6 +56,7 @@
             color: white;
             font-size: 16px;
         }
+
         button {
             width: 100%;
             margin-top: 24px;
@@ -50,21 +69,36 @@
             font-weight: bold;
             cursor: pointer;
         }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
         .message {
             background: #35232b;
             padding: 10px;
             border-radius: 8px;
             color: #ffd5dc;
             margin: 10px 0;
+            overflow-wrap: anywhere;
         }
-        a { color: #38bdf8; }
-        .footer { margin-top: 22px; }
+
+        a {
+            color: #38bdf8;
+        }
+
+        .footer {
+            margin-top: 22px;
+        }
     </style>
 </head>
+
 <body>
     <div class="card">
+
         <h1>Create Account</h1>
-        <p>AI Resume Builder par apna account banao.</p>
+
+        <p>Create an account to get started with AI Resume Builder.</p>
 
         {% with messages = get_flashed_messages() %}
             {% for message in messages %}
@@ -73,26 +107,47 @@
         {% endwith %}
 
         <form method="POST" action="{{ url_for('signup') }}">
+
             <label for="name">Full Name</label>
-            <input id="name" type="text" name="name"
-                   placeholder="Enter your full name" required>
+            <input
+                id="name"
+                type="text"
+                name="name"
+                placeholder="Enter your full name"
+                autocomplete="name"
+                required
+            >
 
             <label for="email">Email Address</label>
-            <input id="email" type="email" name="email"
-                   placeholder="Enter your email" required>
+            <input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                autocomplete="email"
+                required
+            >
 
             <label for="password">Password</label>
-            <input id="password" type="password" name="password"
-                   placeholder="Minimum 8 characters"
-                   minlength="8" required>
+            <input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Minimum 8 characters"
+                minlength="8"
+                autocomplete="new-password"
+                required
+            >
 
             <button type="submit">Create Account</button>
+
         </form>
 
         <p class="footer">
             Already have an account?
             <a href="{{ url_for('login') }}">Login</a>
         </p>
+
     </div>
 </body>
 </html>

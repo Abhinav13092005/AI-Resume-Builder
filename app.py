@@ -53,7 +53,7 @@ def generate_ai_summary(prompt):
     """Generate AI content and retry temporary Gemini errors."""
 
     if not client:
-        raise ValueError("GEMINI_API_KEY .env file mein nahi mili.")
+        raise ValueError("GEMINI_API_KEY was not found in the environment.")
 
     last_error = None
 
@@ -67,7 +67,7 @@ def generate_ai_summary(prompt):
             if response.text:
                 return response.text.strip()
 
-            raise ValueError("Gemini ne empty response diya.")
+            raise ValueError("Gemini returned an empty response.")
 
         except Exception as error:
             last_error = error
@@ -104,7 +104,7 @@ def login_required(view):
     @wraps(view)
     def wrapped_view(*args, **kwargs):
         if "user_id" not in session:
-            flash("Pehle login karo.")
+            flash("Please log in first.")
             return redirect(url_for("login"))
 
         return view(*args, **kwargs)
@@ -208,15 +208,15 @@ def signup():
         password = request.form.get("password", "")
 
         if not name or not email or not password:
-            flash("Saare fields bharna zaroori hai.")
+            flash("Please complete all required fields.")
             return render_template("signup.html")
 
         if len(password) < 8:
-            flash("Password kam se kam 8 characters ka hona chahiye.")
+            flash("Password must contain at least 8 characters.")
             return render_template("signup.html")
 
         if User.query.filter_by(email=email).first():
-            flash("Is email se account pehle se bana hua hai.")
+            flash("An account with this email address already exists.")
             return render_template("signup.html")
 
         user = User(name=name, email=email)
@@ -225,7 +225,7 @@ def signup():
         db.session.add(user)
         db.session.commit()
 
-        flash("Account ban gaya! Ab login karo.")
+        flash("Your account has been created successfully. Please log in.")
         return redirect(url_for("login"))
 
     return render_template("signup.html")
@@ -248,7 +248,7 @@ def login():
 
             return redirect(url_for("dashboard"))
 
-        flash("Email ya password galat hai.")
+        flash("Invalid email address or password.")
 
     return render_template("login.html")
 
@@ -258,7 +258,7 @@ def login():
 @app.route("/logout")
 def logout():
     session.clear()
-    flash("Aap logout ho gaye.")
+    flash("You have been logged out successfully.")
 
     return redirect(url_for("login"))
 
@@ -299,7 +299,7 @@ def resume():
             "resume.html",
             resume_data=data,
             submitted=True,
-            ai_message="Resume database mein save ho gaya.",
+            ai_message="Resume saved to the database successfully.",
             saved_resume_id=record.id,
             selected_template=template_name,
             project_name="",
@@ -356,7 +356,7 @@ def delete_resume(resume_id):
     db.session.delete(record)
     db.session.commit()
 
-    flash("Resume delete ho gaya.")
+    flash("Resume deleted successfully.")
 
     return redirect(url_for("dashboard"))
 
@@ -371,10 +371,10 @@ def improve_summary():
     template_name = get_selected_template()
 
     if not client:
-        message = "GEMINI_API_KEY ko .env file mein check karo."
+        message = "GEMINI_API_KEY is missing. Please check your environment configuration."
 
     elif not data["summary"] and not data["skills"]:
-        message = "Pehle Skills ya Professional Summary bharo."
+        message = "Please enter your skills or professional summary first."
 
     else:
         prompt = f"""
@@ -414,8 +414,7 @@ Existing summary:
             resume_id = record.id
 
             message = (
-                "AI summary improve ho gayi "
-                "aur database mein save ho gayi."
+                "AI summary improved and saved to the database successfully."
             )
 
         except Exception as error:
@@ -430,8 +429,8 @@ Existing summary:
                 ]
             ):
                 message = (
-                    "Gemini server abhi busy hai. "
-                    "Kuch der baad dobara try karo."
+                    "The Gemini server is temporarily busy. "
+                    "Please try again in a few minutes."
                 )
 
             elif any(
@@ -439,8 +438,8 @@ Existing summary:
                 for marker in ["429", "resource_exhausted", "quota"]
             ):
                 message = (
-                    "Gemini API quota ya request limit poori ho sakti hai. "
-                    "Google AI Studio mein quota check karo."
+                    "The Gemini API quota or request limit may have been reached. "
+                    "Please check your quota in Google AI Studio."
                 )
 
             elif any(
@@ -450,18 +449,18 @@ Existing summary:
                     "unauthorized", "permission denied"
                 ]
             ):
-                message = "Gemini API key ya permissions check karo."
+                message = "Please check your Gemini API key and permissions."
 
             elif "404" in error_text or "not found" in error_text:
                 message = (
-                    "Gemini model available nahi hai. "
-                    ".env mein GEMINI_MODEL check karo."
+                    "The Gemini model is unavailable. "
+                    "Please check the GEMINI_MODEL configuration."
                 )
 
             else:
                 message = (
-                    "AI summary generate nahi hui. "
-                    "Terminal mein Gemini API error check karo."
+                    "The AI summary could not be generated. "
+                    "Please check the application logs for details."
                 )
 
     return render_template(
@@ -497,16 +496,16 @@ def generate_project_description():
     message = ""
 
     if not client:
-        message = "GEMINI_API_KEY ko .env file mein check karo."
+        message = "GEMINI_API_KEY is missing. Please check your environment configuration."
 
     elif not project_name:
-        message = "Pehle project ka naam bharo."
+        message = "Please enter the project name first."
 
     elif not project_technologies:
-        message = "Project ki technologies bharo."
+        message = "Please enter the technologies used in the project."
 
     elif not project_features:
-        message = "Project ke features ya details bharo."
+        message = "Please enter the project features or details."
 
     else:
         prompt = f"""
@@ -556,8 +555,8 @@ Rules:
             resume_id = record.id
 
             message = (
-                "AI project description generate ho gayi "
-                "aur resume database mein save ho gaya."
+                "AI project description generated and saved "
+                "to the resume database successfully."
             )
 
         except Exception as error:
@@ -566,29 +565,41 @@ Rules:
 
             if any(
                 marker in error_text
-                for marker in ["503", "unavailable", "high demand", "500", "502", "504"]
+                for marker in [
+                    "503", "unavailable", "high demand",
+                    "500", "502", "504"
+                ]
             ):
-                message = "Gemini server abhi busy hai. Kuch der baad try karo."
+                message = (
+                    "The Gemini server is temporarily busy. "
+                    "Please try again later."
+                )
 
             elif any(
                 marker in error_text
                 for marker in ["429", "resource_exhausted", "quota"]
             ):
-                message = "Gemini API quota check karo."
+                message = "Please check your Gemini API quota."
 
             elif any(
                 marker in error_text
-                for marker in ["401", "403", "api key", "unauthorized"]
+                for marker in [
+                    "401", "403", "api key", "unauthorized",
+                    "permission denied"
+                ]
             ):
-                message = "Gemini API key ya permissions check karo."
+                message = "Please check your Gemini API key and permissions."
 
             elif "404" in error_text or "not found" in error_text:
-                message = "Gemini model available nahi hai. .env mein GEMINI_MODEL check karo."
+                message = (
+                    "The Gemini model is unavailable. "
+                    "Please check the GEMINI_MODEL configuration."
+                )
 
             else:
                 message = (
-                    "Project description generate nahi hui. "
-                    "Terminal mein error check karo."
+                    "The project description could not be generated. "
+                    "Please check the application logs for details."
                 )
 
     return render_template(
